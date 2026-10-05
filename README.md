@@ -40,11 +40,13 @@ docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /va
 
 ## 5. Create self-signed certificate
 
+File names must match `nginx/conf.d/default.conf` (`cert.cert` / `cert.key`).
+
 ```bash
 PATH_DIR="./nginx/certs"
 mkdir -p $PATH_DIR
 cd nginx/certs
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx.key -out nginx.crt -subj "/C=SA/ST=Riyadh/L=Riyadh/O=IT/CN=powerdns-admin.local"
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert.key -out cert.cert -subj "/C=SA/ST=Riyadh/L=Riyadh/O=IT/CN=powerdns-admin.local"
 cd ../..
 ```
 
@@ -80,6 +82,8 @@ sudo docker compose -f pdns2.yml up -d
 
 ## 10. Backup / Restore
 
+Backups older than 7 days are auto-deleted (`BACKUP_KEEP_DAYS=7` in `db_backup.sh`).
+
 ```bash
 sudo apt update
 sudo apt install postgresql-client
@@ -95,9 +99,14 @@ ls -l *.sh
 sudo ufw allow 22/tcp
 sudo ufw allow 2222/tcp
 sudo ufw allow 53/tcp
+sudo ufw allow 53/udp
+sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
-sudo ufw allow 5432/tcp
 sudo ufw allow 8080/tcp
+# PostgreSQL: do NOT open 5432 to the world.
+# Allow it only between Primary and Replica (replace with your IPs):
+# sudo ufw allow from 192.168.10.11 to any port 5432 proto tcp
+# sudo ufw allow from 192.168.10.12 to any port 5432 proto tcp
 ```
 
 ```bash

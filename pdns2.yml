@@ -5,6 +5,11 @@ volumes:
   pg_replica_data:
 
 services:
+  pdns:
+    depends_on:
+      postgres_replica:
+        condition: service_healthy
+
   postgres_replica:
     network_mode: host
     image: docker.io/library/postgres:16-alpine
@@ -19,3 +24,9 @@ services:
       - pg_replica_data:/var/lib/postgresql/data
       - ./pg-replica.sh:/usr/local/bin/entrypoint.sh:ro
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s

@@ -5,6 +5,11 @@ volumes:
   pg_primary_data:
 
 services:
+  pdns:
+    depends_on:
+      postgres_primary:
+        condition: service_healthy
+
   postgres_primary:
     network_mode: host
     image: docker.io/library/postgres:16-alpine
@@ -33,3 +38,4 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+      start_period: 30s
