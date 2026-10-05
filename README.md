@@ -82,8 +82,6 @@ sudo docker compose -f pdns2.yml up -d
 
 ## 10. Backup / Restore
 
-Backups older than 7 days are auto-deleted (`BACKUP_KEEP_DAYS=7` in `db_backup.sh`).
-
 ```bash
 sudo apt update
 sudo apt install postgresql-client

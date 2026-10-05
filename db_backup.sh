@@ -22,7 +22,6 @@ DB_NAME="${DB1_USER:?DB1_USER missing in $ENV_FILE}"
 
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 BACKUP_DIR="$SCRIPT_DIR/database_backups"
-BACKUP_KEEP_DAYS="${BACKUP_KEEP_DAYS:-7}"
 
 export PGPASSWORD="$DB1_PASSWORD"
 
@@ -30,9 +29,6 @@ mkdir -p "$BACKUP_DIR"
 
 pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" "$DB_NAME" > "$BACKUP_DIR/db-$TIMESTAMP.sql"
 pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -F c "$DB_NAME" > "$BACKUP_DIR/db-$TIMESTAMP.backup"
-
-# Retention: delete backups older than BACKUP_KEEP_DAYS (default 7)
-find "$BACKUP_DIR" -type f \( -name 'db-*.sql' -o -name 'db-*.backup' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
 
 unset PGPASSWORD
 
