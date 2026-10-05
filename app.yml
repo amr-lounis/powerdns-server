@@ -1,0 +1,67 @@
+volumes:
+  pdns-data:
+  pdns-admin-data:
+  
+services:
+  pdns:
+    network_mode: host
+    image: docker.io/pschiffe/pdns-pgsql:latest
+    container_name: pdns-auth
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PDNS_launch=gpgsql
+      - PDNS_gpgsql_host=127.0.0.1
+      - PDNS_gpgsql_user=${DB1_USER}
+      - PDNS_gpgsql_dbname=${DB1_USER}
+      - PDNS_gpgsql_password=${DB1_PASSWORD}
+
+      - PDNS_api=yes
+      - PDNS_api_key=${PDNSAPIKEY}
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_allow_from=0.0.0.0/0
+      - PDNS_webserver_password=${PDNSWEBPASSWORD}
+
+      - PDNS_guardian=yes
+      - PDNS_setuid=pdns
+      - PDNS_setgid=pdns
+      - PDNS_local_address=0.0.0.0
+    volumes:
+      - pdns-data:/var/lib/powerdns
+
+  powerdns-admin:
+    network_mode: host
+    image: docker.io/powerdnsadmin/pda-legacy:latest
+    container_name: pdns-admin
+    restart: unless-stopped
+    volumes:
+      - pdns-admin-data:/opt/powerdns-admin
+    env_file:
+      - .env
+    environment:
+      - SQLALCHEMY_DATABASE_URI=sqlite:////opt/powerdns-admin/powerdns-admin.db
+      - SECRET_KEY=${PDNSADMINSECRETKEY}
+
+  nginx-https:
+    network_mode: host
+    image: docker.io/nginx:alpine
+    container_name: pdns-nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+
+  adminer:
+    network_mode: host
+    image: docker.io/adminer:latest
+    container_name: adminer
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    
+#pdns http://host:8001
+#powerdns-admin http://host:80
+#nginx-https https://host:443
+#adminer http://host:8080

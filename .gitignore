@@ -1,0 +1,23 @@
+# Secrets - never commit real passwords/keys
+.env
+!.env.example
+# Database dumps
+**/database_backups/
+*.backup
+*.sql
+*.dump
+# TLS private keys (keep only *.example / public certs if needed)
+*.key
+**/certs/*.key
+!**/certs/*.example
+# Large binaries / local VMs
+*.zip
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.log
+*.tmp
+*~

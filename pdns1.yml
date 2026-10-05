@@ -1,0 +1,35 @@
+include:
+  - app.yml
+
+volumes:
+  pg_primary_data:
+
+services:
+  postgres_primary:
+    network_mode: host
+    image: docker.io/library/postgres:16-alpine
+    container_name: pg_primary
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB1_USER}
+      POSTGRES_USER: ${DB1_USER}
+      POSTGRES_PASSWORD: ${DB1_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: >
+      postgres
+      -c wal_level=replica
+      -c hot_standby=on
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+      -c hot_standby_feedback=on
+      -c listen_addresses=*
+    volumes:
+      - pg_primary_data:/var/lib/postgresql/data
+      - ./pg-primary.sh:/docker-entrypoint-initdb.d/00_init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB1_USER} -d ${DB1_USER}"]
+      interval: 10s
+      timeout: 10s
+      retries: 10

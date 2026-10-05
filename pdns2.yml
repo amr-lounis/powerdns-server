@@ -1,0 +1,21 @@
+include:
+  - app.yml
+
+volumes:
+  pg_replica_data:
+
+services:
+  postgres_replica:
+    network_mode: host
+    image: docker.io/library/postgres:16-alpine
+    container_name: pg_replica
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PGUSER: ${REPLICA_USER}
+      PGPASSWORD: ${REPLICA_PASSWORD}
+      PRIMARY_HOST: ${PRIMARY_HOST}
+    volumes:
+      - pg_replica_data:/var/lib/postgresql/data
+      - ./pg-replica.sh:/usr/local/bin/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
