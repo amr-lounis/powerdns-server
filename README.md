@@ -105,3 +105,38 @@ sudo ufw disable
 sudo ufw enable
 sudo ufw status numbered
 ```
+
+## 12. Logs
+
+View PostgreSQL Primary/Replica container logs to check startup, replication status, and errors.
+
+```bash
+docker logs pg_primary
+docker logs pg_replica
+```
+
+## 13. Test DNS service
+
+Verify that PowerDNS is answering DNS queries. This asks server `10.10.10.10` to resolve `www.site1.lan`.
+
+```bash
+nslookup www.site1.lan 10.10.10.10
+```
+
+## 14. Test API
+
+Verify that the PowerDNS authoritative API is reachable. Replace `changeme` with your actual `PDNSAPIKEY` from `.env`.
+
+```bash
+# Check if the API webserver is up
+curl http://127.0.0.1:8081
+
+# List all servers
+curl -H "X-API-Key: changeme" http://localhost:8081/api/v1/servers
+
+# List all zones
+curl -H "X-API-Key: changeme" http://localhost:8081/api/v1/servers/localhost/zones
+
+# Get a specific zone (replace example.com with your zone name)
+curl -H "X-API-Key: changeme" http://localhost:8081/api/v1/servers/localhost/zones/example.com
+```
