@@ -65,17 +65,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-
-  adminer:
-    network_mode: host
-    image: docker.io/adminer:4.8.1
-    container_name: adminer
-    restart: unless-stopped
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
     
 # Ports (network_mode: host):
 # pdns DNS: 53/tcp+udp, API: http://host:8081
 # powerdns-admin: http://host:80
 # nginx-https: https://host:443
-# adminer: http://host:8080

@@ -95,12 +95,10 @@ ls -l *.sh
 
 ```bash
 sudo ufw allow 22/tcp
-sudo ufw allow 2222/tcp
 sudo ufw allow 53/tcp
 sudo ufw allow 53/udp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
-sudo ufw allow 8080/tcp
 # PostgreSQL: do NOT open 5432 to the world.
 # Allow it only between Primary and Replica (replace with your IPs):
 # sudo ufw allow from 192.168.10.11 to any port 5432 proto tcp
