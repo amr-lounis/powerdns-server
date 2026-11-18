@@ -26,8 +26,8 @@ exit
 ```bash
 docker stop $(docker ps -q) 2>/dev/null
 docker rm $(docker ps -aq) 2>/dev/null
-docker volume rm $(docker volume ls -q) 2>/dev/null
 docker network prune -f
+docker volume rm $(docker volume ls -q) 2>/dev/null
 #docker rmi $(docker images -aq)
 ```
 
